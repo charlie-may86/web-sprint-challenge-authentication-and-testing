@@ -1,11 +1,37 @@
 const router = require("express").Router();
+const bcrypt = require("bcryptjs");
 
-router.get('/', (req, res)=>{
-  res.status(200).json({message: 'router end point'})
-})
+const jwt = require("jsonwebtoken");
+const { TOKEN_SECRET } = require("../../config/secrets");
+
+const Users = require("../users/users-model");
+
+function buildToken(user) {
+  const payload = {
+    subject: user.id,
+    username: user.username,
+  };
+  const options = {
+    expiresIn: "1d",
+  };
+  return jwt.sign(payload, TOKEN_SECRET, options);
+}
 
 router.post("/register", (req, res, next) => {
-  res.json({ message: "This is the register engpoint" });
+  let user = req.body;
+
+  // bcrypting the password before saving
+  const rounds = process.env.BCRYPT_ROUNDS || 8; // 2 ^ 8
+  const hash = bcrypt.hashSync(user.password, rounds);
+
+  user.password = hash;
+
+  Users.add(user)
+    .then((newUser) => {
+      res.status(201).json(newUser);
+    })
+    .catch(next); // our custom err handling middleware in server.js will trap this
+
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
