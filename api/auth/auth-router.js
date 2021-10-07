@@ -60,7 +60,7 @@ router.post("/register", (req, res, next) => {
   */
 });
 
-router.post("/login", checkUserNameExisits, (req, res, next) => {
+router.post("/login", checkUserNameExisits, (req, res) => {
   if (bcrypt.compareSync(req.body.password, req.user.password)) {
     const token = buildToken(req.user);
     res.json({
@@ -68,7 +68,7 @@ router.post("/login", checkUserNameExisits, (req, res, next) => {
       token: token,
     });
   } else {
-    next({ status: 401, message: "username and password required" });
+    res.json({ status: 401, message: "invalid credentials" });
   }
 
   /*
