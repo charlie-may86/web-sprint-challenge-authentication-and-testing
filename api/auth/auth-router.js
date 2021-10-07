@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const { TOKEN_SECRET } = require("../../config/secrets");
 
 const Users = require("../users/users-model");
+const { checkUserNameExisits } = require("../middleware/checkUsernameExists");
 
 function buildToken(user) {
   const payload = {
@@ -59,8 +60,17 @@ router.post("/register", (req, res, next) => {
   */
 });
 
-router.post("/login", (req, res) => {
-  res.end("implement login, please!");
+router.post("/login", checkUserNameExisits, (req, res, next) => {
+  if (bcrypt.compareSync(req.body.password, req.user.password)) {
+    const token = buildToken(req.user);
+    res.json({
+      message: `welcome, ${req.body.username}`,
+      token: token,
+    });
+  } else {
+    next({ status: 401, message: "username and password required" });
+  }
+
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.

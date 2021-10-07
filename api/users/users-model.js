@@ -11,7 +11,9 @@ function find() {
   return db("users");
 }
 
-function findBy(filter) {}
+function findBy(filter) {
+    return db('users').where('username', filter).first()
+}
 
 async function add(user) {
   const [id] = await db("users").insert(user);
