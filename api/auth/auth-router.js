@@ -24,7 +24,7 @@ function buildToken(user) {
 router.post("/register", checkUserNameFree, (req, res, next) => {
   let user = req.body;
   if (!user.username || !user.password) {
-    res.json({ status: 422, message: "username and password required" });
+    res.status(422).json({ message: "username and password required" });
   } else {
     const rounds = process.env.BCRYPT_ROUNDS || 8; // 2 ^ 8
     const hash = bcrypt.hashSync(user.password, rounds);
