@@ -18,7 +18,7 @@ function buildToken(user) {
   return jwt.sign(payload, TOKEN_SECRET, options);
 }
 
-router.post("/register", checkUserNameFree, (req, res, next) => {
+router.post("/register",  (req, res, next) => {
   let user = req.body;
   if (!user.username || !user.password) {
     res.json({ message: "username and password required" });
