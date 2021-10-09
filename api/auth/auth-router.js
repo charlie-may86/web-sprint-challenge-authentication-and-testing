@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { TOKEN_SECRET } = require("../../config/secrets");
 
 const Users = require("../users/users-model");
-const { checkUserNameExisits } = require("../middleware/checkUsernameExists");
+const { checkUserNameExisits, checkUserNameFree } = require("../middleware/checkUsernameExists");
 
 function buildToken(user) {
   const payload = {
@@ -18,7 +18,7 @@ function buildToken(user) {
   return jwt.sign(payload, TOKEN_SECRET, options);
 }
 
-router.post("/register", (req, res, next) => {
+router.post("/register", checkUserNameFree, (req, res, next) => {
   let user = req.body;
   if (!user.username || !user.password) {
     res.json({ message: "username and password required" });
@@ -67,10 +67,10 @@ router.post("/register", (req, res, next) => {
       }
 
     3- On FAILED registration due to `username` or `password` missing from the request body,
-      the response body should include a string exactly as follows: "username and password required".
+      the response body should include a string exactly as follows: "username and password required". CHECK******
 
     4- On FAILED registration due to the `username` being taken,
-      the response body should include a string exactly as follows: "username taken".
+      the response body should include a string exactly as follows: "username taken". CHECK********
   */
 });
 
