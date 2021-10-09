@@ -22,7 +22,7 @@ const checkUserNameFree = async (req, res, next) => {
   const checkUser = await Users.findBy(req.body.username);
   try {
     if (checkUser) {
-      res.json({ message: "username taken" });
+      res.json({status: 409, message: "username taken" });
     } else {
       next();
     }
