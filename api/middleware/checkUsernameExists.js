@@ -19,12 +19,15 @@ const checkUserNameExisits = async (req, res, next) => {
 };
 
 const checkUserNameFree = async (req, res, next) => {
-  const user = req.body;
   const checkUser = await Users.findBy(req.body.username);
-  if (user.username === checkUser.username) {
-    res.json({ message: "username taken" });
-  } else {
-    next();
+  try {
+    if (checkUser) {
+      res.json({ message: "username taken" });
+    } else {
+      next();
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
