@@ -20,31 +20,45 @@ function buildToken(user) {
 
 router.post("/register", (req, res, next) => {
   let user = req.body;
+  if (!user.username || !user.password) {
+    res.json({ message: "username and password required" });
+  } else {
+    const rounds = process.env.BCRYPT_ROUNDS || 8; // 2 ^ 8
+    const hash = bcrypt.hashSync(user.password, rounds);
+
+    user.password = hash;
+
+    Users.add(user)
+      .then((newUser) => {
+        res.status(201).json(newUser);
+      })
+      .catch(next);
+  }
 
   // bcrypting the password before saving
-  const rounds = process.env.BCRYPT_ROUNDS || 8; // 2 ^ 8
-  const hash = bcrypt.hashSync(user.password, rounds);
+  // const rounds = process.env.BCRYPT_ROUNDS || 8; // 2 ^ 8
+  // const hash = bcrypt.hashSync(user.password, rounds);
 
-  user.password = hash;
+  // user.password = hash;
 
-  Users.add(user)
-    .then((newUser) => {
-      res.status(201).json(newUser);
-    })
-    .catch(next); // our custom err handling middleware in server.js will trap this
+  // Users.add(user)
+  //   .then((newUser) => {
+  //     res.status(201).json(newUser);
+  //   })
+  //   .catch(next); // our custom err handling middleware in server.js will trap this
 
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
     DO NOT EXCEED 2^8 ROUNDS OF HASHING!
 
-    1- In order to register a new account the client must provide `username` and `password`:
+    1- In order to register a new account the client must provide `username` and `password`: CHECK********
       {
         "username": "Captain Marvel", // must not exist already in the `users` table
         "password": "foobar"          // needs to be hashed before it's saved
       }
 
-    2- On SUCCESSFUL registration,
+    2- On SUCCESSFUL registration,  CHECK*******
       the response body should have `id`, `username` and `password`:
       {
         "id": 1,
